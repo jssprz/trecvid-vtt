@@ -6,6 +6,7 @@ download_videos holds a directory path and a file path with the list of URLs and
 
 import os
 import argparse
+import logging
 import urllib3.request
 
 __author__ = "jssprz"
@@ -44,7 +45,7 @@ def download_videos(save_dir_path, list_file_path):
         lines = f.readlines()
         video_data = [{"video_id": data[0], "url": data[1], "video_path": "video%s.avi" % data[0]} for data in
                       (x.split() for x in lines)]
-    print('videos to download: {}'.format(len(video_data)))
+    logging.info('videos to download: {}'.format(len(video_data)))
 
     downloads_count = 0
     errors_count = 0
@@ -54,12 +55,12 @@ def download_videos(save_dir_path, list_file_path):
             downloads_count += 1
         elif result == 2:
             errors_count += 1
-            print('ERROR downloading for {}'.format(row['video_id']))
+            logging.error('ERROR downloading for {}'.format(row['video_id']))
 
-    print('Downloaded videos: {}\nTOTAL ERRORS: {}'.format(downloads_count, errors_count))
+    logging.info('Downloaded videos: {}\nTOTAL ERRORS: {}'.format(downloads_count, errors_count))
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Download the videos from a urls.')
     parser.add_argument('-save_dir_path', '--save', type=str, default='videos',
                         help='the path of the folder to save the downloaded videos (default is videos).')
@@ -68,4 +69,14 @@ if __name__ == 'main':
 
     args = parser.parse_args()
 
-    download_videos(args.save_dir_path, args.list_file_path)
+    logging.basicConfig(filename='./log/download',
+                      filemode='a',
+                      format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                      datefmt='%H:%M:%S',
+                      level=logging.DEBUG)
+
+    logging.info('path to save videos: {}'.format(args.save))
+    logging.info('file with the list of URLs: {}'.format(args.file))
+
+    download_videos(args.save, args.file)
+
