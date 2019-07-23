@@ -79,7 +79,7 @@ if __name__ == '__main__':
                         datefmt='%H:%M:%S',
                         level=logging.DEBUG)
 
-    logging.info('path to save videos: {}'.format(args.save))
-    logging.info('file with the list of URLs: {}'.format(args.file))
+    logging.info('path to save videos: {}'.format(args.save_dir_path))
+    logging.info('file with the list of URLs: {}'.format(args.list_file_path))
 
     download_videos(args.save_dir_path, args.list_file_path, args.user, args.password)
