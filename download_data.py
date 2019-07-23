@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""Provides de download_videos function.
-
+"""Provides the download_videos function.
 download_videos holds a directory path and a file path with the list of URLs and save all videos of the
 """
 
@@ -43,14 +42,16 @@ def download_and_process_video(save_dir_path, video_name, video_url):
 def download_videos(save_dir_path, list_file_path):
     with open(list_file_path) as f:
         lines = f.readlines()
-        video_data = [{"video_id": data[0], "url": data[1], "video_path": "video%s.avi" % data[0]} for data in
+        video_data = [{"video_id": data[0], "url": data[1], "video_format": "{}".format(data[1].split('.')[-1])} for data in
                       (x.split() for x in lines)]
     logging.info('videos to download: {}'.format(len(video_data)))
 
     downloads_count = 0
     errors_count = 0
     for row in video_data:
-        result = download_and_process_video(save_dir_path, row['video_id'] + '.avi', row['url'])
+        result = download_and_process_video(save_dir_path,
+                                            '{}.{}'.format(row['video_id'], row['video_format']),
+                                            row['url'])
         if result == 0:
             downloads_count += 1
         elif result == 2:
@@ -70,13 +71,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     logging.basicConfig(filename='./log/download',
-                      filemode='a',
-                      format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                      datefmt='%H:%M:%S',
-                      level=logging.DEBUG)
+                        filemode='a',
+                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                        datefmt='%H:%M:%S',
+                        level=logging.DEBUG)
 
     logging.info('path to save videos: {}'.format(args.save))
     logging.info('file with the list of URLs: {}'.format(args.file))
 
     download_videos(args.save, args.file)
-
